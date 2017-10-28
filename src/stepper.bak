@@ -1,0 +1,43 @@
+#include <Automaton.h>
+#include "Atm_stepper.h"
+
+Atm_stepper stepper;
+Atm_button button;
+
+/* 
+ *  Start a stepper motor running when a button is pressed
+ *  Change motor direction on every new press of the button
+ */
+
+#define STEPS 500
+#define STEP_PULSE 5000 
+#define STEP_PIN 10
+#define DIR_PIN 11
+#define BUTTON_PIN 3
+
+int steps = STEPS;
+
+void setup() {
+
+  stepper.begin( STEP_PIN, DIR_PIN, STEP_PULSE );
+
+/* Uncomment this to make the motor turn back and forth automatically
+  stepper.onFinish( [] ( int idx, int v, int up ) {
+      stepper.step( steps );
+      steps = steps * -1;
+  });
+*/
+
+  button.begin( BUTTON_PIN );
+  
+  button.onPress( [] ( int idx, int v, int up ) {
+      stepper.step( steps );
+      steps = steps * -1; // Reverse direction on each button push
+  });
+
+}
+
+void loop() {
+  automaton.run();
+}
+

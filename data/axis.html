@@ -1,0 +1,64 @@
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<a href="admin.html" class="btn btn--s">&lt;</a>&nbsp;&nbsp;<strong>Konfiguracja osi A</strong>
+<hr>
+	Parametry silnika:<br>
+<form action="/post/axis" method="post">
+    <table border="0" cellspacing="0" cellpadding="3" style="width:350px">
+        <tr>
+            <td align="right">1&deg; =</td>
+            <td>
+                <input type="number" min="0" max="1000000" id="xScale" name="xScale" value=""> kroków
+            </td>
+        </tr>
+        <tr>
+            <td align="right">F =</td>
+            <td>
+                <input type="number" min="0" max="1000000" id="xFeed" name="xFeed"> &deg;/s
+            </td>
+        </tr>
+				<tr>
+				  <td colspan="2" class="divider"><hr /></td>
+				</tr>
+        <tr>
+					<td align="right">Przycisk =</td>
+					<td>
+							<input type="number" min="-3600" max="3600" id="xAction01" name="xAction01" value=""> &deg;
+					</td>
+        </tr>
+        <tr>
+            <td colspan="2" align="center">
+                <input type="submit" style="width:150px" class="btn btn--m btn--blue" value="Zapisz">
+            </td>
+        </tr>
+    </table>
+</form>
+
+<script language="javascript" type="text/javascript">
+    window.onload = function () {
+        load("style.css", "css", function () {
+            load("microajax.js", "js", function () {
+                setValues("/post/axis");
+            });
+        });
+    }
+
+    function load(e, t, n) {
+        if ("js" == t) {
+            var a = document.createElement("script");
+            a.src = e,
+            a.type = "text/javascript",
+            a.async = !1,
+            a.onload = function () { n() },
+            document.getElementsByTagName("head")[0].appendChild(a)
+        } else if ("css" == t) {
+            var a = document.createElement("link");
+            a.href = e,
+            a.rel = "stylesheet",
+            a.type = "text/css",
+            a.async = !1,
+            a.onload = function () { n() },
+            document.getElementsByTagName("head")[0].appendChild(a)
+        }
+    }
+</script>
