@@ -148,68 +148,28 @@ String values = "";
 		values = "";
 	}
 }
-
-/*ESPHTTPServer.onNotFound([](AsyncWebServerRequest *request){
-	Serial.printf("NOT_FOUND: ");
-	if(request->method() == HTTP_GET)
-		Serial.printf("GET");
-	else if(request->method() == HTTP_POST)
-		Serial.printf("POST");
-	else if(request->method() == HTTP_DELETE)
-		Serial.printf("DELETE");
-	else if(request->method() == HTTP_PUT)
-		Serial.printf("PUT");
-	else if(request->method() == HTTP_PATCH)
-		Serial.printf("PATCH");
-	else if(request->method() == HTTP_HEAD)
-		Serial.printf("HEAD");
-	else if(request->method() == HTTP_OPTIONS)
-		Serial.printf("OPTIONS");
-	else
-		Serial.printf("UNKNOWN");
-	Serial.printf(" http://%s%s\n", request->host().c_str(), request->url().c_str());
-
-	if(request->contentLength()){
-		Serial.printf("_CONTENT_TYPE: %s\n", request->contentType().c_str());
-		Serial.printf("_CONTENT_LENGTH: %u\n", request->contentLength());
-	}*/
-	// handlers for padges
-
-	auto handler_stepper_values = ESPHTTPServer.on("/stepper_values", HTTP_GET, [](AsyncWebServerRequest *request) {
-		    for (uint8_t i = 0; i < request->args(); i++) {
-		      DEBUGLOG("Arg %d: %s\r\n", i, request->arg(i).c_str());
-					Serial.print(request->argName(i));
-					Serial.print(" : ");
-					Serial.println(ESPHTTPServer.urldecode(request->arg(i)));
-					if (request->argName(i) == "stepDuration") {
-						stepper.setStepDuration( request->arg(i).toInt() );
-					}
-					if (request->argName(i) == "step") {
-						stepper.step( request->arg(i).toInt() );
-					}
-		    }
-				String values = "";
-				values = "stepDuration|" + (String)xAxis.stepDuration + "|input\n";
-				// values += "xAction01|" + (String)steps + "|input\n";
-				request->send(200, "text/plain", values);
-				values = "";
-
-				xAxis.loadAxis();
-			  xAxis.calcStepduration( xAxis.scale, xAxis.feed );
-				stepper.setStepDuration(xAxis.stepDuration);
-				ESPHTTPServer.load_user_config("xAction01", steps);
-				//ESPHTTPServer.handleFileRead("/stepper.html", request); // for it to work u need edit mthod in liblary .h from private to public
-				request->send(SPIFFS, "/stepper.html");
-		});
-
-auto handler_stepper = ESPHTTPServer.on("/stepper", HTTP_GET, [](AsyncWebServerRequest *request) {
-			String values = "";
+// prepare handlers
+auto handler_stepper_values = ESPHTTPServer.on("/stepper_values", HTTP_GET, [](AsyncWebServerRequest *request) {
 	    for (uint8_t i = 0; i < request->args(); i++) {
 	      DEBUGLOG("Arg %d: %s\r\n", i, request->arg(i).c_str());
 				Serial.print(request->argName(i));
 				Serial.print(" : ");
 				Serial.println(ESPHTTPServer.urldecode(request->arg(i)));
+				if (request->argName(i) == "enable") {
+				}
+				if (request->argName(i) == "stepDuration") {
+					stepper.setStepDuration( request->arg(i).toInt() );
+				}
+				if (request->argName(i) == "step") {
+					stepper.step( request->arg(i).toInt() );
+				}
 	    }
+			String values = "";
+			values = "stepDuration|" + (String)stepper.getStepDuration() + "|input\n";
+			// values += "step|" + (String)steps + "|input\n";
+			request->send(200, "text/plain", values);
+			values = "";
+
 			xAxis.loadAxis();
 		  xAxis.calcStepduration( xAxis.scale, xAxis.feed );
 			stepper.setStepDuration(xAxis.stepDuration);
@@ -217,38 +177,53 @@ auto handler_stepper = ESPHTTPServer.on("/stepper", HTTP_GET, [](AsyncWebServerR
 			//ESPHTTPServer.handleFileRead("/stepper.html", request); // for it to work u need edit mthod in liblary .h from private to public
 			request->send(SPIFFS, "/stepper.html");
 	});
+
+auto handler_stepper = ESPHTTPServer.on("/stepper", HTTP_GET, [](AsyncWebServerRequest *request) {
+		String values = "";
+    for (uint8_t i = 0; i < request->args(); i++) {
+      DEBUGLOG("Arg %d: %s\r\n", i, request->arg(i).c_str());
+			Serial.print(request->argName(i));
+			Serial.print(" : ");
+			Serial.println(ESPHTTPServer.urldecode(request->arg(i)));
+    }
+		xAxis.loadAxis();
+	  xAxis.calcStepduration( xAxis.scale, xAxis.feed );
+		stepper.setStepDuration(xAxis.stepDuration);
+		ESPHTTPServer.load_user_config("xAction01", steps);
+		//ESPHTTPServer.handleFileRead("/stepper.html", request); // for it to work u need edit mthod in liblary .h from private to public
+		request->send(SPIFFS, "/stepper.html");
+});
 auto handler_axis = ESPHTTPServer.on("/axis", HTTP_GET, [](AsyncWebServerRequest *request) {
-			String target = "/";
-			// String values = "";
-	    for (uint8_t i = 0; i < request->args(); i++) {
-	      DEBUGLOG("Arg %d: %s\r\n", i, request->arg(i).c_str());
-				Serial.print(request->argName(i));
-				Serial.print(" : ");
-				Serial.println(ESPHTTPServer.urldecode(request->arg(i)));
+		String target = "/";
+		// String values = "";
+    for (uint8_t i = 0; i < request->args(); i++) {
+      DEBUGLOG("Arg %d: %s\r\n", i, request->arg(i).c_str());
+			Serial.print(request->argName(i));
+			Serial.print(" : ");
+			Serial.println(ESPHTTPServer.urldecode(request->arg(i)));
 
-				//check for post redirect
-				if (request->argName(i) == "afterpost")	{
-					target = ESPHTTPServer.urldecode(request->arg(i));
-				}
-				else {  //or savedata in Json File
-					ESPHTTPServer.save_user_config(request->argName(i), request->arg(i));
-				}
-	    }
-			xAxis.loadAxis();
-		  xAxis.calcStepduration( xAxis.scale, xAxis.feed );
-			stepper.setStepDuration(xAxis.stepDuration);
-			ESPHTTPServer.load_user_config("xAction01", steps);
-			request->send(SPIFFS, "/axis.html");
-	});
-	auto handler_axis_values = ESPHTTPServer.on("/axis_values", HTTP_GET, [](AsyncWebServerRequest *request) {
-				String values = "";
-				values = "xScale|" + (String)xAxis.scale + "|input\n";
-				values += "xFeed|" + (String)xAxis.feed + "|input\n";
-				values += "xAction01|" + (String)steps + "|input\n";
-				request->send(200, "text/plain", values);
-				values = "";
-	});
-
+			//check for post redirect
+			if (request->argName(i) == "afterpost")	{
+				target = ESPHTTPServer.urldecode(request->arg(i));
+			}
+			else {  //or savedata in Json File
+				ESPHTTPServer.save_user_config(request->argName(i), request->arg(i));
+			}
+    }
+		xAxis.loadAxis();
+	  xAxis.calcStepduration( xAxis.scale, xAxis.feed );
+		stepper.setStepDuration(xAxis.stepDuration);
+		ESPHTTPServer.load_user_config("xAction01", steps);
+		request->send(SPIFFS, "/axis.html");
+});
+auto handler_axis_values = ESPHTTPServer.on("/axis_values", HTTP_GET, [](AsyncWebServerRequest *request) {
+			String values = "";
+			values = "xScale|" + (String)xAxis.scale + "|input\n";
+			values += "xFeed|" + (String)xAxis.feed + "|input\n";
+			values += "xAction01|" + (String)steps + "|input\n";
+			request->send(200, "text/plain", values);
+			values = "";
+});
 
 void setup() {
     // put your setup code here, to run once:
