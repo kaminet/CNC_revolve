@@ -9,7 +9,7 @@ Atm_stepper& Atm_stepper::begin( int stepPin, int dirPin, uint32_t stepDuration 
   const static state_t state_table[] PROGMEM = {
     /*                   ON_ENTER    ON_LOOP   ON_EXIT  EVT_TIMER  EVT_COUNTER  EVT_START  EVT_STOP       ELSE */
     /*      IDLE */      ENT_IDLE, ATM_SLEEP,       -1,        -1,          -1,     START,       -1,        -1,
-    /*     START */     ENT_START,        -1,       -1,        -1,          -1,        -1,       -1, STEP_HIGH,
+    /*     START */     ENT_START,        -1,       -1,        -1,        DONE,        -1,       -1, STEP_HIGH,
     /* STEP_HIGH */ ENT_STEP_HIGH,        -1,       -1,  STEP_LOW,          -1,     START,     IDLE,        -1,
     /*  STEP_LOW */  ENT_STEP_LOW,        -1,       -1,      LOOP,          -1,     START,     IDLE,        -1,
     /*      LOOP */            -1,        -1,       -1,        -1,        DONE,        -1,     IDLE, STEP_HIGH,
@@ -112,14 +112,10 @@ void Atm_stepper::step( int steps ) {
 void Atm_stepper::setStepDuration( uint32_t stepDuration) {
 
   micros_timer = stepDuration / 2;
-  // if (this->state() == IDLE
-  //   ||this->state() == START
-  //   ||this->state() == DONE)
-  // {micros_timer = stepDuration / 2; return true;}
-  // return false;
 }
 
 uint32_t Atm_stepper::getStepDuration( void ) const {
+
   return micros_timer;
 }
 

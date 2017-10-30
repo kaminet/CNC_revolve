@@ -3,18 +3,18 @@
 <a href="admin.html" class="btn btn--s">&lt;</a>&nbsp;&nbsp;<strong>Konfiguracja osi A</strong>
 <hr>
 	Parametry silnika:<br>
-<form action="/post/axis" method="post">
+<form action="/axis" method="get">
     <table border="0" cellspacing="0" cellpadding="3" style="width:350px">
         <tr>
             <td align="right">1&deg; =</td>
             <td>
-                <input type="number" min="0" max="1000000" id="xScale" name="xScale" value=""> kroków
+                <input type="number" min="0" max="1000000" step="0.000001" id="xScale" name="xScale" value=""> kroków
             </td>
         </tr>
         <tr>
             <td align="right">F =</td>
             <td>
-                <input type="number" min="0" max="1000000" id="xFeed" name="xFeed"> &deg;/s
+                <input type="number" min="0" max="1000000" step=any id="xFeed" name="xFeed"> &deg;/s
             </td>
         </tr>
 				<tr>
@@ -23,7 +23,7 @@
         <tr>
 					<td align="right">Przycisk =</td>
 					<td>
-							<input type="number" min="-3600" max="3600" id="xAction01" name="xAction01" value=""> &deg;
+							<input type="number" min="-3600" max="3600" step=any id="xAction01" name="xAction01" value=""> &deg;
 					</td>
         </tr>
         <tr>
@@ -38,7 +38,7 @@
     window.onload = function () {
         load("style.css", "css", function () {
             load("microajax.js", "js", function () {
-                setValues("/post/axis");
+                setValues("/axis_values");
             });
         });
     }
