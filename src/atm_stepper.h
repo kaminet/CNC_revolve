@@ -16,6 +16,7 @@ class Atm_stepper: public Machine {
   Atm_stepper& onFinish( atm_cb_push_t callback, int idx = 0 );
   Atm_stepper& start( void );
   Atm_stepper& stop( void );
+  Atm_stepper& reset( void );
   void setStep( int steps );
   void step( int steps );
   void setStepDuration( uint32_t stepDuration );

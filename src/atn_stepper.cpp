@@ -60,10 +60,10 @@ void Atm_stepper::action( int id ) {
       digitalWrite( stepPin, LOW );
       if ( steps < 0 ) {
         digitalWrite( dirPin, LOW );
-        counter.set( steps * -1 );
+        counter.set( counter.value + steps * -1 );
       } else {
         digitalWrite( dirPin, HIGH );
-        counter.set( steps );
+        counter.set( counter.value + steps );
       }
       return;
     case ENT_STEP_HIGH:
@@ -75,6 +75,7 @@ void Atm_stepper::action( int id ) {
       return;
     case ENT_DONE:
       digitalWrite( stepPin, LOW );
+      // this->steps = 0;
       push( connectors, ON_FINISH, 0, 0, 0 );
       return;
   }
@@ -116,7 +117,7 @@ void Atm_stepper::setStepDuration( uint32_t stepDuration) {
 
 uint32_t Atm_stepper::getStepDuration( void ) const {
 
-  return micros_timer;
+  return micros_timer*2;
 }
 
 /* Nothing customizable below this line
@@ -137,6 +138,14 @@ Atm_stepper& Atm_stepper::stop() {
   return *this;
 }
 
+Atm_stepper& Atm_stepper::reset() {
+  // this->steps = 0;
+  this->counter.set(0);
+  this->timer.set(0);
+  // this->micros_timer = 0;
+  trigger( EVT_STOP );
+  return *this;
+}
 
 /*
  * onFinish() push connector variants ( slots 1, autostore 0, broadcast 0 )
