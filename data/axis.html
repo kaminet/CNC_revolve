@@ -3,29 +3,38 @@
 <a href="/" class="btn btn--s">&lt;</a>&nbsp;&nbsp;<strong>Konfiguracja osi A</strong>
 <hr>
 	Parametry silnika:<br>
-<form action="/axis" method="get">
+<form action="" method="get">
     <table border="0" cellspacing="0" cellpadding="3" style="width:350px">
         <tr>
             <td align="right">1&deg; =</td>
             <td>
-                <input type="number" min="0" max="1000000" step="0.000001" id="xScale" name="xScale" value=""> kroków
+                <input type="number" min="0" max="1000000" step="0.000001" id="xScale" name="xScale" value="" size="4" maxlength="8"> kroków
             </td>
         </tr>
         <tr>
             <td align="right">F =</td>
             <td>
-                <input type="number" min="0" max="1000000" step=any id="xFeed" name="xFeed"> &deg;/s
+                <input type="number" min="0" max="1000000" step=any id="xFeed" name="xFeed" size="4" maxlength="8"> &deg;/s
             </td>
         </tr>
 				<tr>
 				  <td colspan="2" class="divider"><hr /></td>
 				</tr>
+				<tr>
+					<td align="right">Przycisk:</td>
+				</tr>
         <tr>
-					<td align="right">Przycisk =</td>
+					<td align="right">G01 </td>
 					<td>
-							<input type="number" min="-3600" max="3600" step=any id="xAction01" name="xAction01" value=""> &deg;
+							<input type="number" min="-3600" max="3600" step=any id="xAction01" name="xAction01" value="" size="4" maxlength="8"> &deg;
 					</td>
         </tr>
+				<tr>
+					<td align="right">odstep =</td>
+					<td>
+							<input type="number" min="0" max="1000" step=any id="buttonDelay" name="buttonDelay" value="" size="4" maxlength="8"> ms
+					</td>
+				</tr>
         <tr>
             <td colspan="2" align="center">
                 <input type="submit" style="width:150px" class="btn btn--m btn--blue" value="Zapisz">

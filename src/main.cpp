@@ -31,6 +31,7 @@ Atm_button button;
 #define STEP_PIN PIN_PWM_B
 #define DIR_PIN PIN_DIR_B
 #define BUTTON_PIN PIN_D3
+#define BUTTON_DELAY 300
 
 String data = "";
 
@@ -79,7 +80,7 @@ void strAxis::saveAxis ( void ) {
 
 
 int steps = STEPS;
-
+int buttonDelay = BUTTON_DELAY;
 
 // configure callbacks
 void  callbackJSON(AsyncWebServerRequest *request) {
@@ -176,6 +177,7 @@ auto handler_stepper_values = ESPHTTPServer.on("/stepper_values", HTTP_GET, [](A
 			ESPHTTPServer.load_user_config("xAction01", steps);
 			//ESPHTTPServer.handleFileRead("/stepper.html", request); // for it to work u need edit mthod in liblary .h from private to public
 			request->send(SPIFFS, "/stepper.html");
+			button.longPress(2,buttonDelay);
 	});
 
 auto handler_stepper = ESPHTTPServer.on("/stepper", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -214,13 +216,16 @@ auto handler_axis = ESPHTTPServer.on("/axis", HTTP_GET, [](AsyncWebServerRequest
 	  xAxis.calcStepduration( xAxis.scale, xAxis.feed );
 		stepper.setStepDuration(xAxis.stepDuration);
 		ESPHTTPServer.load_user_config("xAction01", steps);
+		ESPHTTPServer.load_user_config("buttonDelay", buttonDelay);
 		request->send(SPIFFS, "/axis.html");
+		button.longPress(2, buttonDelay);
 });
 auto handler_axis_values = ESPHTTPServer.on("/axis_values", HTTP_GET, [](AsyncWebServerRequest *request) {
 			String values = "";
 			values = "xScale|" + (String)xAxis.scale + "|input\n";
 			values += "xFeed|" + (String)xAxis.feed + "|input\n";
 			values += "xAction01|" + (String)steps + "|input\n";
+			values += "buttonDelay|" + (String)buttonDelay + "|input\n";
 			request->send(200, "text/plain", values);
 			values = "";
 });
@@ -248,26 +253,31 @@ void setup() {
   xAxis.calcStepduration( xAxis.scale, xAxis.feed );
 	stepper.setStepDuration(xAxis.stepDuration);
 	ESPHTTPServer.load_user_config("xAction01", steps);
+	ESPHTTPServer.load_user_config("buttonDelay", buttonDelay);
 	// data == "" ? steps = STEPS : steps = data.toInt();
 	button.begin( BUTTON_PIN );
-
 	button.onPress( [] ( int idx, int v, int up ) {
-	    stepper.step( steps*xAxis.scale );
-	    // steps = steps * -1; // Reverse direction on each button push
-
-				Serial.print("scale: ");
-				Serial.print(xAxis.scale);
-				Serial.print("  |   ");
-				Serial.print("feed: ");
-				Serial.print(xAxis.feed);
-				Serial.print("  |   ");
-				Serial.print("action: ");
-				Serial.print(steps);
-				Serial.print("  |   ");
-				Serial.print("duration: ");
-				Serial.println(stepper.getStepDuration());
-
+		switch (v) {
+			case 1:
+				Serial.println("button to short");
+				return;
+			case 2:
+			Serial.print("scale: ");
+			Serial.print(xAxis.scale);
+			Serial.print("  |   ");
+			Serial.print("feed: ");
+			Serial.print(xAxis.feed);
+			Serial.print("  |   ");
+			Serial.print("action: ");
+			Serial.print(steps);
+			Serial.print("  |   ");
+			Serial.print("duration: ");
+			Serial.println(stepper.getStepDuration());
+			stepper.step( steps*xAxis.scale );
+			return;
+		}
 	});
+	button.longPress(2, buttonDelay);
 }
 
 void loop() {
