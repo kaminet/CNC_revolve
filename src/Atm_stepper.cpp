@@ -21,6 +21,7 @@ Atm_stepper& Atm_stepper::begin( int stepPin, int dirPin, uint32_t stepDuration 
   this->dirPin = dirPin;
   pinMode( stepPin, OUTPUT );
   pinMode( dirPin, OUTPUT );
+  digitalWrite( stepPin, LOW );
   micros_timer = stepDuration / 2;
   counter.set( 0 );
   Machine::begin( state_table, ELSE );
@@ -58,7 +59,6 @@ void Atm_stepper::action( int id ) {
       digitalWrite( dirPin, LOW );
       return;
     case ENT_START:
-      digitalWrite( stepPin, LOW );
       if ( steps < 0 ) {
         digitalWrite( dirPin, LOW );
         counter.set( counter.value + steps * -1 );
