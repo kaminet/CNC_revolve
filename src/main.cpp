@@ -169,15 +169,6 @@ auto handler_stepper_values = ESPHTTPServer.on("/stepper_values", HTTP_GET, [](A
 			values = "stepDuration|" + (String)stepper.getStepDuration() + "|input\n";
 			// values += "step|" + (String)steps + "|input\n";
 			request->send(200, "text/plain", values);
-			values = "";
-
-			xAxis.loadAxis();
-		  xAxis.calcStepduration( xAxis.scale, xAxis.feed );
-			stepper.setStepDuration(xAxis.stepDuration);
-			ESPHTTPServer.load_user_config("xAction01", steps);
-			//ESPHTTPServer.handleFileRead("/stepper.html", request); // for it to work u need edit mthod in liblary .h from private to public
-			request->send(SPIFFS, "/stepper.html");
-			button.longPress(2,buttonDelay);
 	});
 
 auto handler_stepper = ESPHTTPServer.on("/stepper", HTTP_GET, [](AsyncWebServerRequest *request) {
@@ -188,12 +179,7 @@ auto handler_stepper = ESPHTTPServer.on("/stepper", HTTP_GET, [](AsyncWebServerR
 			Serial.print(" : ");
 			Serial.println(ESPHTTPServer.urldecode(request->arg(i)));
     }
-		xAxis.loadAxis();
-	  xAxis.calcStepduration( xAxis.scale, xAxis.feed );
-		stepper.setStepDuration(xAxis.stepDuration);
-		ESPHTTPServer.load_user_config("xAction01", steps);
-		//ESPHTTPServer.handleFileRead("/stepper.html", request); // for it to work u need edit mthod in liblary .h from private to public
-		request->send(SPIFFS, "/stepper.html");
+	  request->send(SPIFFS, "/stepper.html");
 });
 auto handler_axis = ESPHTTPServer.on("/axis", HTTP_GET, [](AsyncWebServerRequest *request) {
 		String target = "/";
