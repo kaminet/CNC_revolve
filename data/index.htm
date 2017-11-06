@@ -1,103 +1,42 @@
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
-<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<a href="/"  class="btn btn--s">&lt;</a>&nbsp;&nbsp;<strong>Stepper DEBUG</strong>
-	<hr>
-	<form action="" method="post">
-		<table border="0"  cellspacing="0" cellpadding="3" >
-			<tr>
-				<td align="right">Enable</td>
-				<td colspan="2" align="left">
-				  <input id="enable" type="button" style="width:250px" class="btn btn--m btn--red" value="OFF" onclick="handleToggleButton(this)">
-			  </td>
-			</tr>
-			<tr>
-				<td align="right">Step<br>duration</td>
-				<td>
-				  <label><input id="durationSlider" type="range" min="0" value="0" max="3" step="1" oninput="document.getElementById('stepDuration').value=durationSteps[this.value]"></label>
-				  <input type="number" min="1000" max="100000" step="10" id="stepDuration" name="stepDuration" size="4"><br>
-				  <input id="setDuration" type="button" style="width:250px" class="btn btn--m btn--blue" value="set" onclick="setValues('/post/stepper?'+ 'stepDuration' + '=' + document.getElementById('stepDuration').value)">
-			  </td>
-			</tr>
-  		<tr>
-				<td align="right">Step</td>
-				<td>
-				  <label><input id="stepSlider" type="range" min="0" value="0" max="3" step="1" oninput="document.getElementById('step').value=stepSteps[this.value]"></label>
-				  <input type="number" min="0" max="100000" step="100" id="step" name="step" size="4"><br>
-				  <input id="setStepsL" type="button" style="width:120px" class="btn btn--m btn--blue" value="<-" onclick="setValues('/post/stepper?'+ 'step' + '=' + -document.getElementById('step').value)">
-			    <input id="setStepsR" type="button" style="width:120px" class="btn btn--m btn--blue" value="->" onclick="setValues('/post/stepper?'+ 'step' + '=' + document.getElementById('step').value)">
-				</td>
-			</tr>
-		</table>
-	</form>
-	<script>
-	var durationSteps = [100,500,1000,5000,10000,20000,50000];
-	var stepSteps = [0,100,1000,5000,20000,50000,100000];
-	function setVal(el) {
-		if(!el.lastVal) {
-			el.lastVal = el.value;
-		}
-		if(el.lastVal != el.value) {
-			console.log(el.value, el.id);
-			setValues('/post/stepper?'+ el.id + '=' + el.value);
-			el.lastVal = el.value;
-		}
-	}
+<strong>Obracacz</strong>
+<hr>
+<a href="axis" style="width:250px" class="btn btn--m btn--blue" >Konfiguruj akcje</a>
+<br>
+<a href="diag.html"   style="width:250px"  class="btn btn--m btn--blue" >Diagnostyka systemu</a>
+<br>
 
-	function param(el) {
-		console.log(el.value, el.id);
-		setValues('/post/stepper?'+ el.id + '=' + 1);
-	}
 
-	function handleToggleButton(el) {
-		if(el.value == "ON") {
-		  el.value = "OFF";
-		  el.className = "btn btn--m btn--green";
-		} else {
-		  el.value = "ON";
-		  el.className = "btn btn--m btn--red";
-		}
-		//console.log(el.value, el.id);
-		//setValues('/post/stepper?'+ parent + '=' + el.value);
-		setVal(el);
-	}
-
-	function spot(position, dead_zone) {
-		var uri = '/post/stepper';
-		uri += '?position=' + position;
-		uri += '&dead_zone=' + dead_zone;
-		setValues(uri);
-	}
-
+<script>
 	window.onload = function ()
 	{
 		load("style.css","css", function()
 		{
 			load("microajax.js","js", function()
 			{
-				setValues("/post/stepper");
+				// Do something after load...
 			});
 		});
 	}
-
-	function load(e, t, n) {
-		if ("js" == t) {
-			var a = document.createElement("script");
-			a.src = e, a.type = "text/javascript",
-			a.async = !1,
-			a.onload = function () {
-				n()
-			},
+	function load(e,t,n) {
+		if("js"==t) {
+			var a=document.createElement("script");
+			a.src=e,
+			a.type="text/javascript",
+			a.async=!1,
+			a.onload=function() { n() },
 			document.getElementsByTagName("head")[0].appendChild(a)
-		} else if ("css" == t) {
-			var a = document.createElement("link");
-			a.href = e, a.rel = "stylesheet", a.type = "text/css",
-			a.async = !1,
-			a.onload = function () {
-				n()
-			},
+		}
+		else if("css"==t) {
+			var a=document.createElement("link");
+			a.href=e,
+			a.rel="stylesheet",
+			a.type="text/css",
+			a.async=!1,
+			a.onload=function(){ n() },
 			document.getElementsByTagName("head")[0].appendChild(a)
 		}
 	}
 
-	</script>
+</script>

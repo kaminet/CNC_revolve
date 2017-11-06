@@ -7,19 +7,21 @@
 Atm_stepper& Atm_stepper::begin( int stepPin, int dirPin, uint32_t stepDuration ) {
   // clang-format off
   const static state_t state_table[] PROGMEM = {
-    /*                   ON_ENTER    ON_LOOP   ON_EXIT  EVT_TIMER  EVT_COUNTER  EVT_START  EVT_STOP       ELSE */
-    /*      IDLE */      ENT_IDLE, ATM_SLEEP,       -1,        -1,          -1,     START,       -1,        -1,
-    /*     START */     ENT_START,        -1,       -1,        -1,          -1,        -1,       -1, STEP_HIGH,
-    /* STEP_HIGH */ ENT_STEP_HIGH,        -1,       -1,  STEP_LOW,          -1,     START,     IDLE,        -1,
-    /*  STEP_LOW */  ENT_STEP_LOW,        -1,       -1,      LOOP,          -1,     START,     IDLE,        -1,
-    /*      LOOP */            -1,        -1,       -1,        -1,        DONE,        -1,     IDLE, STEP_HIGH,
-    /*      DONE */      ENT_DONE,        -1,       -1,        -1,          -1,     START,       -1,      IDLE,
+    /*                   ON_ENTER    ON_LOOP  ON_EXIT  EVT_TIMER  EVT_COUNTER  EVT_RESET  EVT_START  EVT_STOP       ELSE */
+    /*      IDLE */      ENT_IDLE, ATM_SLEEP,      -1,        -1,          -1,     RESET,     START,       -1,        -1,
+    /*     RESET */     ENT_RESET,        -1,      -1,        -1,          -1,     RESET,        -1,       -1,      IDLE,
+    /*     START */     ENT_START,        -1,      -1,        -1,        DONE,     RESET,        -1,       -1, STEP_HIGH,
+    /* STEP_HIGH */ ENT_STEP_HIGH,        -1,      -1,  STEP_LOW,          -1,     RESET,     START,     IDLE,        -1,
+    /*  STEP_LOW */  ENT_STEP_LOW,        -1,      -1,      LOOP,          -1,     RESET,     START,     IDLE,        -1,
+    /*      LOOP */            -1,        -1,      -1,        -1,        DONE,     RESET,        -1,     IDLE, STEP_HIGH,
+    /*      DONE */      ENT_DONE,        -1,      -1,        -1,          -1,     RESET,     START,       -1,      IDLE,
   };
   // clang-format on
   this->stepPin = stepPin;
   this->dirPin = dirPin;
   pinMode( stepPin, OUTPUT );
   pinMode( dirPin, OUTPUT );
+  digitalWrite( stepPin, LOW );
   micros_timer = stepDuration / 2;
   counter.set( 0 );
   Machine::begin( state_table, ELSE );
@@ -57,14 +59,17 @@ void Atm_stepper::action( int id ) {
       digitalWrite( dirPin, LOW );
       return;
     case ENT_START:
-      digitalWrite( stepPin, LOW );
       if ( steps < 0 ) {
         digitalWrite( dirPin, LOW );
-        counter.set( steps * -1 );
+        counter.set( counter.value + steps * -1 );
       } else {
         digitalWrite( dirPin, HIGH );
-        counter.set( steps );
+        counter.set( counter.value + steps );
       }
+      return;
+    case ENT_RESET:
+      counter.set(0);
+      timer.set(0);
       return;
     case ENT_STEP_HIGH:
       digitalWrite( stepPin, HIGH );
@@ -75,6 +80,7 @@ void Atm_stepper::action( int id ) {
       return;
     case ENT_DONE:
       digitalWrite( stepPin, LOW );
+      // this->steps = 0;
       push( connectors, ON_FINISH, 0, 0, 0 );
       return;
   }
@@ -112,15 +118,11 @@ void Atm_stepper::step( int steps ) {
 void Atm_stepper::setStepDuration( uint32_t stepDuration) {
 
   micros_timer = stepDuration / 2;
-  // if (this->state() == IDLE
-  //   ||this->state() == START
-  //   ||this->state() == DONE)
-  // {micros_timer = stepDuration / 2; return true;}
-  // return false;
 }
 
 uint32_t Atm_stepper::getStepDuration( void ) const {
-  return micros_timer;
+
+  return micros_timer*2;
 }
 
 /* Nothing customizable below this line
@@ -131,6 +133,11 @@ uint32_t Atm_stepper::getStepDuration( void ) const {
  *
  */
 
+Atm_stepper& Atm_stepper::reset() {
+  trigger( EVT_RESET );
+  return *this;
+}
+
 Atm_stepper& Atm_stepper::start() {
   trigger( EVT_START );
   return *this;
@@ -140,7 +147,6 @@ Atm_stepper& Atm_stepper::stop() {
   trigger( EVT_STOP );
   return *this;
 }
-
 
 /*
  * onFinish() push connector variants ( slots 1, autostore 0, broadcast 0 )
@@ -162,6 +168,6 @@ Atm_stepper& Atm_stepper::onFinish( atm_cb_push_t callback, int idx ) {
 
 Atm_stepper& Atm_stepper::trace( Stream & stream ) {
   Machine::setTrace( &stream, atm_serial_debug::trace,
-    "STEPPER\0EVT_TIMER\0EVT_COUNTER\0EVT_START\0EVT_STOP\0ELSE\0IDLE\0START\0STEP_HIGH\0STEP_LOW\0LOOP\0DONE" );
+    "STEPPER\0EVT_TIMER\0EVT_COUNTER\0EVT_RESET\0EVT_START\0EVT_STOP\0ELSE\0IDLE\0RESET\0START\0STEP_HIGH\0STEP_LOW\0LOOP\0DONE" );
   return *this;
 }

@@ -1,9 +1,9 @@
 <!DOCTYPE html>
 <meta name="viewport" content="width=device-width, initial-scale=1" />
 <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-<a href="/"  class="btn btn--s">&lt;</a>&nbsp;&nbsp;<strong>Stepper DEBUG</strong>
+<a href="/axis"  class="btn btn--s">&lt;</a>&nbsp;&nbsp;<strong>Stepper DEBUG</strong>
 	<hr>
-	<form action="" method="post">
+	<form action="" method="get">
 		<table border="0"  cellspacing="0" cellpadding="3" >
 			<tr>
 				<td align="right">Enable</td>
@@ -15,17 +15,17 @@
 				<td align="right">Step<br>duration</td>
 				<td>
 				  <label><input id="durationSlider" type="range" min="0" value="0" max="3" step="1" oninput="document.getElementById('stepDuration').value=durationSteps[this.value]"></label>
-				  <input type="number" min="1000" max="100000" step="10" id="stepDuration" name="stepDuration" size="4"><br>
-				  <input id="setDuration" type="button" style="width:250px" class="btn btn--m btn--blue" value="set" onclick="setValues('/post/stepper?'+ 'stepDuration' + '=' + document.getElementById('stepDuration').value)">
+				  <input type="number" min="1000" max="100000" step="10" id="stepDuration" name="stepDuration" size="6"><br>
+				  <input id="setDuration" type="button" style="width:250px" class="btn btn--m btn--blue" value="set" onclick="setValues('/stepper_values?'+ 'stepDuration' + '=' + document.getElementById('stepDuration').value)">
 			  </td>
 			</tr>
   		<tr>
 				<td align="right">Step</td>
 				<td>
 				  <label><input id="stepSlider" type="range" min="0" value="0" max="3" step="1" oninput="document.getElementById('step').value=stepSteps[this.value]"></label>
-				  <input type="number" min="0" max="100000" step="100" id="step" name="step" size="4"><br>
-				  <input id="setStepsL" type="button" style="width:120px" class="btn btn--m btn--blue" value="<-" onclick="setValues('/post/stepper?'+ 'step' + '=' + -document.getElementById('step').value)">
-			    <input id="setStepsR" type="button" style="width:120px" class="btn btn--m btn--blue" value="->" onclick="setValues('/post/stepper?'+ 'step' + '=' + document.getElementById('step').value)">
+				  <input type="number" min="0" max="100000" step="100" id="step" name="step" size="6" value="100"><br>
+				  <input id="setStepsL" type="button" style="width:120px" class="btn btn--m btn--blue" value="<-" onclick="setValues('/stepper_values?'+ 'step' + '=' + -document.getElementById('step').value)">
+			    <input id="setStepsR" type="button" style="width:120px" class="btn btn--m btn--blue" value="->" onclick="setValues('/stepper_values?'+ 'step' + '=' + document.getElementById('step').value)">
 				</td>
 			</tr>
 		</table>
@@ -39,14 +39,14 @@
 		}
 		if(el.lastVal != el.value) {
 			console.log(el.value, el.id);
-			setValues('/post/stepper?'+ el.id + '=' + el.value);
+			setValues('/stepper_values?'+ el.id + '=' + el.value);
 			el.lastVal = el.value;
 		}
 	}
 
 	function param(el) {
 		console.log(el.value, el.id);
-		setValues('/post/stepper?'+ el.id + '=' + 1);
+		setValues('/stepper_values?'+ el.id + '=' + 1);
 	}
 
 	function handleToggleButton(el) {
@@ -58,12 +58,12 @@
 		  el.className = "btn btn--m btn--red";
 		}
 		//console.log(el.value, el.id);
-		//setValues('/post/stepper?'+ parent + '=' + el.value);
+		//setValues('/stepper_values?'+ parent + '=' + el.value);
 		setVal(el);
 	}
 
 	function spot(position, dead_zone) {
-		var uri = '/post/stepper';
+		var uri = '/stepper_values';
 		uri += '?position=' + position;
 		uri += '&dead_zone=' + dead_zone;
 		setValues(uri);
@@ -75,7 +75,7 @@
 		{
 			load("microajax.js","js", function()
 			{
-				setValues("/post/stepper");
+				setValues("/stepper_values");
 			});
 		});
 	}

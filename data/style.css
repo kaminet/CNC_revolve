@@ -63,6 +63,47 @@ hr {
     width: 100%;
 }
 
+.btn--red {
+    background-color: #DD0000;
+}
+
+.btn--red:link, .btn--red:visited {
+    color: #fff;
+    background-color: #D97400;
+}
+
+.btn--red:hover, .btn--red:focus {
+    color: #fff !important;
+    background-color: #aa6300;
+    border-color: #aa6300;
+}
+
+.btn--red:active {
+    color: #fff;
+    background-color: #3F1F00;
+    border-color: #3F1F00;
+}
+
+.btn--green {
+    background-color: #00DD00;
+}    
+.btn--green:link, .btn--green:visited {
+    color: #fff;
+    background-color: #00D974;
+}
+
+.btn--green:hover, .btn--green:focus {
+    color: #fff !important;
+    background-color: #00aa63;
+    border-color: #00aa63;
+}
+
+.btn--green:active {
+    color: #fff;
+    background-color: #003F01;
+    border-color: #003F01;
+}
+
 .btn--blue:link, .btn--blue:visited {
     color: #fff;
     background-color: #0074D9;

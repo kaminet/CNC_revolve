@@ -5,8 +5,8 @@
 class Atm_stepper: public Machine {
 
  public:
-  enum { IDLE, START, STEP_HIGH, STEP_LOW, LOOP, DONE }; // STATES
-  enum { EVT_TIMER, EVT_COUNTER, EVT_START, EVT_STOP, ELSE }; // EVENTS
+  enum { IDLE, RESET, START, STEP_HIGH, STEP_LOW, LOOP, DONE }; // STATES
+  enum { EVT_TIMER, EVT_COUNTER, EVT_RESET, EVT_START, EVT_STOP, ELSE }; // EVENTS
   Atm_stepper( void ) : Machine() {};
   Atm_stepper& begin( int stepPin, int dirPin, uint32_t stepDuration );
   Atm_stepper& trace( Stream & stream );
@@ -14,6 +14,7 @@ class Atm_stepper: public Machine {
   int state( void );
   Atm_stepper& onFinish( Machine& machine, int event = 0 );
   Atm_stepper& onFinish( atm_cb_push_t callback, int idx = 0 );
+  Atm_stepper& reset( void );
   Atm_stepper& start( void );
   Atm_stepper& stop( void );
   void setStep( int steps );
@@ -22,7 +23,7 @@ class Atm_stepper: public Machine {
   uint32_t getStepDuration( void ) const;
 
  private:
-  enum { ENT_IDLE, ENT_STEP_HIGH, ENT_STEP_LOW, ENT_DONE, ENT_START }; // ACTIONS
+  enum { ENT_IDLE, ENT_RESET, ENT_START, ENT_STEP_HIGH, ENT_STEP_LOW, ENT_DONE }; // ACTIONS
   enum { ON_FINISH, CONN_MAX }; // CONNECTORS
   atm_connector connectors[CONN_MAX];
   int event( int id );
@@ -43,30 +44,48 @@ Automaton::ATML::begin - Automaton Markup Language
   <machine name="Atm_stepper">
     <states>
       <IDLE index="0" sleep="1" on_enter="ENT_IDLE">
-        <EVT_START>STEP_HIGH</EVT_START>
+        <EVT_RESET>RESET</EVT_RESET>
+        <EVT_START>START</EVT_START>
       </IDLE>
-      <STEP_HIGH index="1" on_enter="ENT_STEP_HIGH">
+      <RESET index="1" on_enter="ENT_RESET">
+        <EVT_RESET>RESET</EVT_RESET>
+        <ELSE>IDLE</ELSE>
+      </RESET>
+      <START index="2" on_enter="ENT_START">
+        <EVT_COUNTER>DONE</EVT_COUNTER>
+        <EVT_RESET>RESET</EVT_RESET>
+        <ELSE>STEP_HIGH</ELSE>
+      </START>
+      <STEP_HIGH index="3" on_enter="ENT_STEP_HIGH">
         <EVT_TIMER>STEP_LOW</EVT_TIMER>
+        <EVT_RESET>RESET</EVT_RESET>
+        <EVT_START>START</EVT_START>
         <EVT_STOP>IDLE</EVT_STOP>
       </STEP_HIGH>
-      <STEP_LOW index="2" on_enter="ENT_STEP_LOW">
+      <STEP_LOW index="4" on_enter="ENT_STEP_LOW">
         <EVT_TIMER>LOOP</EVT_TIMER>
+        <EVT_RESET>RESET</EVT_RESET>
+        <EVT_START>START</EVT_START>
         <EVT_STOP>IDLE</EVT_STOP>
       </STEP_LOW>
-      <LOOP index="3">
-        <EVT_COUNTER>STEP_HIGH</EVT_COUNTER>
+      <LOOP index="5">
+        <EVT_COUNTER>DONE</EVT_COUNTER>
+        <EVT_RESET>RESET</EVT_RESET>
         <EVT_STOP>IDLE</EVT_STOP>
-        <ELSE>DONE</ELSE>
+        <ELSE>STEP_HIGH</ELSE>
       </LOOP>
-      <DONE index="4" on_enter="ENT_DONE">
+      <DONE index="6" on_enter="ENT_DONE">
+        <EVT_RESET>RESET</EVT_RESET>
+        <EVT_START>START</EVT_START>
         <ELSE>IDLE</ELSE>
       </DONE>
     </states>
     <events>
       <EVT_TIMER index="0" access="PRIVATE"/>
       <EVT_COUNTER index="1" access="PRIVATE"/>
-      <EVT_START index="2" access="PUBLIC"/>
-      <EVT_STOP index="3" access="PUBLIC"/>
+      <EVT_RESET index="2" access="PUBLIC"/>
+      <EVT_START index="3" access="PUBLIC"/>
+      <EVT_STOP index="4" access="PUBLIC"/>
     </events>
     <connectors>
       <FINISH autostore="0" broadcast="0" dir="PUSH" slots="1"/>
@@ -78,3 +97,4 @@ Automaton::ATML::begin - Automaton Markup Language
 
 Automaton::ATML::end
 */
+
