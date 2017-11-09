@@ -1,1 +1,0 @@
-{"ssid":"KamiNetN","pass":"ntenimak","ip":[192,168,1,4],"netmask":[255,255,255,0],"gateway":[192,168,1,1],"dns":[192,168,1,1],"dhcp":true,"ntp":"pool.ntp.org","NTPperiod":15,"timeZone":10,"daylight":true,"deviceName":"ESP8266fs"}
