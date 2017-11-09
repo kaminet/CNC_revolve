@@ -264,6 +264,10 @@ void setup() {
 		}
 	});
 	button.longPress(2, buttonDelay);
+
+	stepper.onFinish( [] ( int idx, int v, int up ){
+		Serial.println("stepper DONE");
+	});
 }
 
 void loop() {

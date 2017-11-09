@@ -6,3 +6,4 @@
 lib\FSBrowserNG\
 !lib\FSBrowserNG\src\
 debug\
+data/config.json
