@@ -8,18 +8,18 @@
 
 // raw GPIO pins //
 #define PIN_D0    16    // supports digital read/write only, no PWM, pullup, etc. ?can't be low for boot? //
-#define PIN_D1    5     // preffered
-#define PIN_D2    4     // preffered
-#define PIN_D3    0     // HIGH for Boot LOW for Flash
-#define PIN_D4    2     // HIGH for Boot
-#define PIN_D5    14
-#define PIN_D6    12
-#define PIN_D7    13
-#define PIN_D8    15     // LOW for Boot
-#define PIN_D9    3
-#define PIN_D10   1
-#define PIN_D11   9
-#define PIN_D12   10
+#define PIN_D1    5     // preffered IN
+#define PIN_D2    4     // preffered IN
+#define PIN_D3    0     // ! HIGH for Boot LOW for Flash
+#define PIN_D4    2     // ! HIGH for Boot
+#define PIN_D5    14    // preffered IN
+#define PIN_D6    12    // preffered IN
+#define PIN_D7    13    // secondary IN / RX2
+#define PIN_D8    15    // ! LOW for Boot | NOT preffered as IN
+#define PIN_D9    3     // RX0
+#define PIN_D10   1     // TX0
+#define PIN_D11   9     // secondary IN / SD2
+#define PIN_D12   10    // secondary IN / SD3
 
 // alternative GPIO pin labels | GPIO //
 #define PIN_RX    PIN_D9       // 3

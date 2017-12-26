@@ -2,8 +2,7 @@
 .piolibdeps
 .clang_complete
 .gcc-flags.json
-\data\config.json
-lib\FSBrowserNG\
-!lib\FSBrowserNG\src\
-debug\
 data/config.json
+lib/FSBrowserNG/
+!lib/FSBrowserNG/src/
+debug/
