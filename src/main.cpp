@@ -43,9 +43,9 @@ Atm_button runButton, drillButton;
 #define DIR_PIN PIN_DIR_B
 #define RUN_BUTTON_PIN PIN_D7
 #define RUN_BUTTON_DELAY 300
-#define DRILL_BUTTON_PIN PIN_D3
+#define DRILL_BUTTON_PIN PIN_D6
 #define DRILL_BUTTON_DELAY 300
-#define DRILL_ARM_PIN PIN_D6
+#define DRILL_ARM_PIN PIN_D1
 
 
 String data = "";
@@ -342,7 +342,8 @@ void setup() {
 			Serial.print("  |   ");
 			Serial.print("duration: ");
 			Serial.println(stepper.getStepDuration());
-			stepper.step( steps*xAxis.scale );
+			// stepper.step( steps*xAxis.scale );
+			drillArm.trigger( drillArm.EVT_BLINK );
 			return;
 		}
 	});
@@ -356,6 +357,7 @@ void setup() {
 
 	drillArm.onFinish( [] ( int idx, int v, int up ){
 		Serial.println("drillArm DONE");
+		stepper.step( steps*xAxis.scale );
 	});
 
 	drillButton.begin( DRILL_BUTTON_PIN )
